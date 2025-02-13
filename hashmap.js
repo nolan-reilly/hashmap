@@ -175,9 +175,13 @@ class HashMap {
     this.capacity = 16;
     this.loadFactor = 0.8;
     this.buckets = [];
+
+    this.keyVals = [];
   }
 
   set(key, value) {
+    this.keyVals.push([key, value]);
+
     const hashCode = hash(key, this.capacity);
 
     if (hashCode < 0 || hashCode >= this.capacity) {
@@ -226,6 +230,13 @@ class HashMap {
   }
 
   remove(key) {
+    // Not really optimal
+    for (let i = 0; i < this.keyVals.length; i++) {
+      if (this.keyVals[i][0] == key) {
+        this.keyVals.splice(i, 1);
+      }
+    }
+
     const hashCode = hash(key, this.capacity);
 
     if (hashCode < 0 || hashCode >= this.capacity) {
@@ -263,6 +274,30 @@ class HashMap {
       this.buckets[i] = null;
     }
   }
+
+  keys() {
+    const arr = [];
+
+    for (let i = 0; i < this.keyVals.length; i++) {
+      arr.push(this.keyVals[i][0]);
+    }
+
+    return arr;
+  }
+
+  values() {
+    const arr = [];
+
+    for (let i = 0; i < this.keyVals.length; i++) {
+      arr.push(this.keyVals[i][1]);
+    }
+
+    return arr;
+  }
+
+  entries() {
+    return this.keyVals;
+  }
 }
 
 
@@ -280,6 +315,11 @@ test.set('jacket', 'blue')
 test.set('kite', 'pink')
 test.set('lion', 'golden')
 
+console.log(test);
+
 console.log(test.length());
 console.log(test.clear());
 console.log(test.length());
+
+console.log(test.values());
+console.log(test.keys());
