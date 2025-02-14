@@ -11,7 +11,7 @@ class LinkedList {
   }
 
   append(value) {
-    const node = new Node(value)
+    const node = new Node(value);
 
     if (this.head == null) {
       this.head = node;
@@ -42,7 +42,7 @@ class LinkedList {
     }
 
     let current = this.head;
-    while(current != null) {
+    while (current != null) {
       count++;
       current = current.nextNode;
     }
@@ -154,7 +154,6 @@ class LinkedList {
   }
 }
 
-
 function hash(key, bucketLength) {
   let hashCode = 0;
 
@@ -168,7 +167,6 @@ function hash(key, bucketLength) {
 
   return hashCode % bucketLength;
 }
-
 
 class HashMap {
   constructor() {
@@ -194,10 +192,16 @@ class HashMap {
       const list = new LinkedList();
       list.append(node);
       this.buckets[hashCode] = list;
-
-    } else { // The bucket is already populated
+    } else {
+      // The bucket is already populated
       const node = new Node(value);
       this.buckets[hashCode].append(node);
+    }
+
+    // Grow hashmap if length is greater or equal to load
+    if (this.length() / this.capacity >= this.loadFactor) {
+      console.log("Growing hashmap");
+      this.grow();
     }
   }
 
@@ -221,7 +225,7 @@ class HashMap {
     if (hashCode < 0 || hashCode >= this.capacity) {
       throw new Error("Trying to access index out of bounds");
     }
-  
+
     if (this.buckets[hashCode]) {
       return true;
     }
@@ -298,28 +302,50 @@ class HashMap {
   entries() {
     return this.keyVals;
   }
+
+  grow() {
+    // We could just use the entries
+    this.capacity *= 2;
+
+    this.clear(); // Clear buckets
+
+    for (let i = 0; i < this.keyVals.length; i++) {
+      const hashCode = hash(this.keyVals[i][0], this.capacity);
+
+      if (hashCode < 0 || hashCode >= this.capacity) {
+        throw new Error("Trying to access index out of bounds");
+      }
+
+      // Create a linked list for the bucket
+      if (this.buckets[hashCode] == null) {
+        const node = new Node(this.keyVals[i][1]);
+        const list = new LinkedList();
+        list.append(node);
+        this.buckets[hashCode] = list;
+      } else {
+        // The bucket is already populated
+        const node = new Node(this.keyVals[i][1]);
+        this.buckets[hashCode].append(node);
+      }
+    }
+  }
 }
 
-
 const test = new HashMap();
-test.set('apple', 'red')
-test.set('banana', 'yellow')
-test.set('carrot', 'orange')
-test.set('dog', 'brown')
-test.set('elephant', 'gray')
-test.set('frog', 'green')
-test.set('grape', 'purple')
-test.set('hat', 'black')
-test.set('ice cream', 'white')
-test.set('jacket', 'blue')
-test.set('kite', 'pink')
-test.set('lion', 'golden')
+test.set("apple", "red");
+test.set("banana", "yellow");
+test.set("carrot", "orange");
+test.set("dog", "brown");
+test.set("elephant", "gray");
+test.set("frog", "green");
+test.set("grape", "purple");
+test.set("hat", "black");
+test.set("ice cream", "white");
+test.set("jacket", "blue");
+test.set("kite", "pink");
+test.set("lion", "golden");
+test.set("jackal", "cyan");
+test.set("Mongoose", "slate");
 
 console.log(test);
-
 console.log(test.length());
-console.log(test.clear());
-console.log(test.length());
-
-console.log(test.values());
-console.log(test.keys());
